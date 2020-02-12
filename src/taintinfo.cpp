@@ -281,7 +281,6 @@ void taint_query(const std::string& query_input) noexcept
             {
                 break;
             }
-            else
             ++entry_idx;
         }
         if (entry_idx >= TAINT_FLAGS_ENTRIES)
@@ -405,7 +404,7 @@ void taint_list() noexcept
         }
         std::cout << "- " << TAINT_FLAGS[idx].flag_on_char << ": " <<
             TAINT_FLAGS[idx].on_description << " (" <<
-           get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
+            get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
     }
 }
 

@@ -349,10 +349,10 @@ void taint_analyze(const uint64_t taint_status) noexcept
         }
         std::cout << F_RESET;
     }
-    std::cout << std::endl;
+    std::cout << "\n";
     std::cout << F_BOLD << "Numeric representation: " << F_RESET << taint_status << " / 0x";
     print_hex(taint_status);
-    std::cout << std::endl << std::endl;
+    std::cout << "\n\n";
     for (size_t idx = 0; idx < TAINT_FLAGS_ENTRIES; ++idx)
     {
         uint64_t flag_value = get_flag_value(TAINT_FLAGS[idx].flag_shift);
@@ -375,19 +375,19 @@ void taint_analyze(const uint64_t taint_status) noexcept
         {
             std::cout << "- " << level_format << TAINT_FLAGS[idx].flag_on_char << F_RESET << " " <<
                 TAINT_FLAGS[idx].on_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")\n";
         }
         else
         if (TAINT_FLAGS[idx].flag_off_char != SPACER && TAINT_FLAGS[idx].off_description != nullptr)
         {
             std::cout << "- " << F_INFO << TAINT_FLAGS[idx].flag_off_char << F_RESET << " " <<
                 TAINT_FLAGS[idx].off_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)" << std::endl;
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)\n";
         }
     }
     if (taint_status == 0)
     {
-        std::cout << "(Kernel is not tainted)" << std::endl;
+        std::cout << "(Kernel is not tainted)\n";
     }
     std::cout << std::endl;
 }
@@ -400,12 +400,13 @@ void taint_list() noexcept
         {
             std::cout << "- " << TAINT_FLAGS[idx].flag_off_char << ": " <<
                 TAINT_FLAGS[idx].off_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)" << std::endl;
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)\n";
         }
         std::cout << "- " << TAINT_FLAGS[idx].flag_on_char << ": " <<
             TAINT_FLAGS[idx].on_description << " (" <<
-            get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
+            get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")\n";
     }
+    std::cout << std::endl;
 }
 
 void print_syntax(const char* const program) noexcept

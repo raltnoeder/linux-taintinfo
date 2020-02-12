@@ -41,14 +41,14 @@
 #include <dsaext.h>
 #include <integerparse.h>
 
-constexpr const std::streamsize BFR_SIZE = 64;
-constexpr const char* const TAINT_INFO_FILE = "/proc/sys/kernel/tainted";
-constexpr const char SPACER = '.';
-constexpr const char* const HEX_CHARS = "0123456789ABCDEF";
+constexpr std::streamsize BFR_SIZE = 64;
+constexpr const char* TAINT_INFO_FILE = "/proc/sys/kernel/tainted";
+constexpr char SPACER = '.';
+constexpr const char* HEX_CHARS = "0123456789ABCDEF";
 
-constexpr const int EXIT_NORM = 0;
-constexpr const int EXIT_ERR_GENERIC = 1;
-constexpr const int EXIT_ERR_MEM_ALLOC = 2;
+constexpr int EXIT_NORM = 0;
+constexpr int EXIT_ERR_GENERIC = 1;
+constexpr int EXIT_ERR_MEM_ALLOC = 2;
 
 enum class taint_level : uint16_t
 {
@@ -69,7 +69,7 @@ struct taint_info
     const char*     on_description;
 };
 
-constexpr const taint_info TAINT_FLAGS[] =
+constexpr taint_info TAINT_FLAGS[] =
 {
     {
         0,          taint_level::INFO,  'G',    'P',
@@ -145,13 +145,13 @@ constexpr const taint_info TAINT_FLAGS[] =
         nullptr,   "Kernel was built with the struct randomization plugin"
     }
 };
-constexpr const size_t TAINT_FLAGS_ENTRIES = sizeof (TAINT_FLAGS) / sizeof (taint_info);
+constexpr size_t TAINT_FLAGS_ENTRIES = sizeof (TAINT_FLAGS) / sizeof (taint_info);
 
-constexpr const char* const F_INFO  = "\x1b[0;32m";
-constexpr const char* const F_WARN  = "\x1b[1;33m";
-constexpr const char* const F_ALERT = "\x1b[1;31m";
-constexpr const char* const F_BOLD  = "\x1b[1m";
-constexpr const char* const F_RESET = "\x1b[0m";
+constexpr const char* F_INFO  = "\x1b[0;32m";
+constexpr const char* F_WARN  = "\x1b[1;33m";
+constexpr const char* F_ALERT = "\x1b[1;31m";
+constexpr const char* F_BOLD  = "\x1b[1m";
+constexpr const char* F_RESET = "\x1b[0m";
 
 const std::string PRM_LIST("list");
 const std::string PRM_FLAGS("taint=");

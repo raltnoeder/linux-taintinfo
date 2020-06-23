@@ -69,7 +69,7 @@ struct taint_info
     const char*     on_description;
 };
 
-constexpr taint_info TAINT_FLAGS[] =
+constexpr const taint_info TAINT_FLAGS[] =
 {
     {
         0,          taint_level::INFO,  'G',    'P',
@@ -155,11 +155,13 @@ constexpr const char* F_RESET = "\x1b[0m";
 
 const std::string PRM_LIST("list");
 const std::string PRM_FLAGS("taint=");
+const std::string PRM_VALUE("value=");
 const std::string PRM_CURRENT("current");
 
 // @throws std::bad_alloc, dsaext::NumberFormatException
 bool taint_load(uint64_t& taint_status);
 void taint_analyze(const uint64_t taint_status) noexcept;
+bool taint_parse_value(const std::string& value_str, uint64_t& taint_status);
 void taint_list() noexcept;
 void taint_query(const std::string& query_string) noexcept;
 void print_syntax(const char* program) noexcept;
@@ -201,6 +203,17 @@ int main(const int argc, const char* const argv[])
             {
                 taint_query(cl_param.substr(PRM_FLAGS.length(), cl_param.length() - PRM_FLAGS.length()));
                 exit_code = EXIT_NORM;
+            }
+            else
+            if (cl_param.find(PRM_VALUE) == 0)
+            {
+                std::string value_str(cl_param, PRM_VALUE.length());
+                uint64_t taint_status = 0;
+                exit_code = taint_parse_value(value_str, taint_status) ? EXIT_NORM : EXIT_ERR_GENERIC;
+                if (exit_code == EXIT_NORM)
+                {
+                    taint_analyze(taint_status);
+                }
             }
             else
             {
@@ -255,6 +268,21 @@ bool taint_load(uint64_t& taint_status)
     {
         std::cerr << F_ALERT << "Input file \"" << TAINT_INFO_FILE <<
             "\" contains unparsable data" << F_RESET << std::endl;
+    }
+    return rc;
+}
+
+bool taint_parse_value(const std::string& value_str, uint64_t& taint_status)
+{
+    bool rc = false;
+    try
+    {
+        taint_status = dsaext::parse_unsigned_int64(value_str);
+        rc = true;
+    }
+    catch (dsaext::NumberFormatException&)
+    {
+        std::cerr << F_ALERT << "Unparsable taint value \"" << value_str << "\"" << F_RESET << std::endl;
     }
     return rc;
 }
@@ -349,10 +377,10 @@ void taint_analyze(const uint64_t taint_status) noexcept
         }
         std::cout << F_RESET;
     }
-    std::cout << "\n";
+    std::cout << std::endl;
     std::cout << F_BOLD << "Numeric representation: " << F_RESET << taint_status << " / 0x";
     print_hex(taint_status);
-    std::cout << "\n\n";
+    std::cout << std::endl << std::endl;
     for (size_t idx = 0; idx < TAINT_FLAGS_ENTRIES; ++idx)
     {
         uint64_t flag_value = get_flag_value(TAINT_FLAGS[idx].flag_shift);
@@ -375,19 +403,19 @@ void taint_analyze(const uint64_t taint_status) noexcept
         {
             std::cout << "- " << level_format << TAINT_FLAGS[idx].flag_on_char << F_RESET << " " <<
                 TAINT_FLAGS[idx].on_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")\n";
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
         }
         else
         if (TAINT_FLAGS[idx].flag_off_char != SPACER && TAINT_FLAGS[idx].off_description != nullptr)
         {
             std::cout << "- " << F_INFO << TAINT_FLAGS[idx].flag_off_char << F_RESET << " " <<
                 TAINT_FLAGS[idx].off_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)\n";
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)" << std::endl;
         }
     }
     if (taint_status == 0)
     {
-        std::cout << "(Kernel is not tainted)\n";
+        std::cout << "(Kernel is not tainted)" << std::endl;
     }
     std::cout << std::endl;
 }
@@ -400,21 +428,21 @@ void taint_list() noexcept
         {
             std::cout << "- " << TAINT_FLAGS[idx].flag_off_char << ": " <<
                 TAINT_FLAGS[idx].off_description << " (" <<
-                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)\n";
+                get_flag_value(TAINT_FLAGS[idx].flag_shift) << " unset)" << std::endl;
         }
         std::cout << "- " << TAINT_FLAGS[idx].flag_on_char << ": " <<
             TAINT_FLAGS[idx].on_description << " (" <<
-            get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")\n";
+            get_flag_value(TAINT_FLAGS[idx].flag_shift) << ")" << std::endl;
     }
-    std::cout << std::endl;
 }
 
 void print_syntax(const char* const program) noexcept
 {
-    std::cout << "Syntax: " << program << " { current | list | taint=<flags> }\n";
-    std::cout << "        current      Display information about the current taint status of the running kernel\n";
-    std::cout << "        list         List all known taint flags and their descriptions\n";
-    std::cout << "        taint=flags  Display information about the specified taint flags\n";
+    std::cout << "Syntax: " << program << " { current | list | taint=<flags> | value=<number>}\n";
+    std::cout << "        current         Display information about the current taint status of the running kernel\n";
+    std::cout << "        list            List all known taint flags and their descriptions\n";
+    std::cout << "        taint=<flags>   Display information about the specified taint flags\n";
+    std::cout << "        value=<number>  Display information about the specified numeric taint value\n";
     std::cout << std::endl;
 }
 
